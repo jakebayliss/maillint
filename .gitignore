@@ -1,0 +1,56 @@
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.csproj.user
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+# Logs
+*.log
+logs/
+TestResult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# ASP.NET local configuration
+**/Properties/launchSettings.json
+appsettings.*.local.json
+
+# Resharper / DotCover
+_ReSharper*/
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Cache
+.ionide/
+.cache/
+
+
