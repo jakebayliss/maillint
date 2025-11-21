@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using API.Services;
+using System.Text.RegularExpressions;
 
 namespace API.Controllers;
 
@@ -24,7 +25,12 @@ public class RewriteController : ControllerBase
 				return BadRequest(new { error = "Text is required." });
 			}
 
-			var prompt = $$"""
+			var sanitizedFullBody = req.FullBody ?? string.Empty;
+			sanitizedFullBody = sanitizedFullBody.Replace('\u00A0', ' ');
+			sanitizedFullBody = Regex.Replace(sanitizedFullBody, @"[\u0000-\u001F\u007F\u200B-\u200D\u2060\uFEFF]", "");
+			sanitizedFullBody = Regex.Replace(sanitizedFullBody, @"\s+", " ").Trim();
+
+			var systemPrompt = $$"""
 			Rewrite the following email message. Tip: Keep everything concise and clear.
 			Follow the below rules which apply to the given email:
 			- If there are tasks, make sure they are numbered and clear
@@ -81,11 +87,11 @@ public class RewriteController : ControllerBase
 			Thanks
 			</email>
 
-			Email:
-			{{req.Text}}
+			History (context only, do not edit):
+			{{sanitizedFullBody}}
 			""";
 
-			var content = await _llm.CompleteAsync(prompt, ct);
+			var content = await _llm.CompleteAsync(systemPrompt, req.Text, CancellationToken.None);
 
 			if (string.IsNullOrWhiteSpace(content))
 			{
@@ -101,5 +107,5 @@ public class RewriteController : ControllerBase
 	}
 }
 
-public record RewriteRequest(string Text);
+public record RewriteRequest(string Text, string? FullBody);
 
